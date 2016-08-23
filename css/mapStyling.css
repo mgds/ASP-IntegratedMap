@@ -1,0 +1,81 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Aug 2, 2016, 10:22:56 AM
+    Author     : johnjon
+*/
+.ucontent {
+     height:300px;
+     overflow-y:scroll;
+     font: 0.95em/1.3em "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.utig_file, .mgds_file {
+    border-bottom: 1px solid gray;
+    width: 250px;
+    padding: 2px 5px 5px 5px;
+}
+.ucontent img.segyimg {
+    max-width: 240px;
+    max-height: 240px;
+    display: block;
+    margin: 0px auto;
+    box-shadow: 2px 2px 4px gray;
+}
+.ucontent .segylink {
+    text-decoration: none;
+    border-bottom: none;
+    color: #002288;
+    cursor: pointer;
+}
+.ucontent .img_box {
+    border:1px solid gray;
+    padding:4px;
+    margin:4px 0px;
+}
+.ucontent .segyfilename {
+    font-size:.85em;
+    text-align:center;
+}
+.ucontent .lockunlock {
+    height:20px;
+    vertical-align:middle;
+}
+.ucontent .u_imgdiv {
+    position: relative;
+    padding-top: 4px;
+    margin-bottom: 4px;
+}
+.ucontent .u_caption, .ucontent  .u_contrib {
+    font-style: italic;
+}
+.ucontent .u_caption {
+    font-size: .95em;
+}
+.ucontent .customize {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    padding: 1px 2px;
+    background-color: white;
+    border-radius: 2px;
+    font-size: .96em;
+    text-decoration: none;
+    border: 1px solid gray;
+    color: #444;
+    box-shadow: 1px 1px 2px gray;
+    font-weight: bold;
+}
+.ucontent .u_entry {
+    font-weight:200;
+    font-size:1.4em;
+    line-height: 1.5em;
+}
+.ucontent .utigdownloadlink {
+    cursor: pointer;
+    margin: 0px 2px;
+    border-bottom: 1px solid #002288;
+}
+

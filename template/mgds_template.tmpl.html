@@ -1,0 +1,56 @@
+	{{for properties.objects}}
+    {{if entry_id}}
+    <div class="mgds_file">
+	<div class="u_entry">
+	  <a target="_blank" href="{{:entry_url}}">{{:entry_id.toUpperCase()}}</a> {{:data_types_bare}} Data
+	  <img src="http://www.marine-geo.org/imgs/{{if is_released=='f'}}locked.png{{else}}unlocked.png{{/if}}"
+	       title = "{{if is_released=='f'}}Restricted{{else}}Open{{/if}} Access"
+	       />
+     </div>
+     {{if doi}}
+     <div class="u_doi"><b>Data DOI:</b>{{:doi}}</div>
+     {{/if}}
+     {{if image_url}}
+     <div class="img_box">
+        <div class="segyfilename"><b>File: </b>{{:file_name}}</div>
+        <div class="u_imgdiv">
+            <a class="segylink" onclick="window.open('{{:image_url}}','','width=700,height=500');" target="_blank" >
+                <img itemprop="image" class="segyimg" src="{{:image_url}}" alt="{{:details}}" title="{{:details}}">
+            </a>
+        </div>
+        <div class="u_caption">{{:details}}</div>
+	 </div>
+     {{else}}
+     <div>
+        <b>File: </b>{{:file_name}}
+     </div>
+     <div class="u_caption">
+        {{:details}}
+     </div>
+     {{/if}}
+     {{if contributor_person_id}}
+     <div class="u_contrib">Contributed by {{:contributor_person_id}}</div>
+     {{/if}}
+	<div><b>Platform:</b> <i>{{:platform_id}} ({{:platform_type}})</i></div>
+	<div class="u_linnum"><b>Line(s): </b>
+        {{for events}}
+            <div>
+                <a href="http://www.marine-geo.org/tools/search/RelatedData.php?event_uid={{:event_uid}}" target="_blank">{{:event_name}}</a>
+            </div>
+            {{/for}}</div>
+	<div class="u_files">
+        <b>Download Files</b>
+        <div style="margin-left:5px" class="filecontent" id="file_{{:data_uid}}">
+            {{for files}}
+            {{if access == 'PUBLIC'}}
+            <div>
+                <a href="http://www.marine-geo.org/tools/search/download.php?data_uid={{:data_uid}}" target="_blank">{{:file_format}} {{:data_types}}</a>
+            </div>
+            {{/if}}
+            {{/for}}
+        </div>
+	  <a target="_blank" href="{{:data_set_url}}"> More Details &#8594;</a>
+	</div>
+      </div>
+    {{/if}}
+      {{/for}}

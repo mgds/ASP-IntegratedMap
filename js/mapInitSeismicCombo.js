@@ -117,7 +117,7 @@ $(document).ready(function(){
             "sld_url" : "http://www.marine-geo.org/services/sld/mcs_proc_sld.xml",
             "layers" : 'UTIG-Lines',
             "query_layers" : ['UTIG-DataObjects']
-        ,
+        },
         {
             "title" : "SCS",
             "sld_url" : "http://www.marine-geo.org/services/sld/scs_sld.xml",

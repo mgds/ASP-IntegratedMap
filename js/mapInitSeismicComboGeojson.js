@@ -89,19 +89,19 @@ $(document).ready(function() {
 	    return function(e,lloverlay) {
 		var ft = e.feature;
 		var id = ft.getId();
-		var names = [];
+		var names = {};
 		if (id.match(/^utig/)) {
 		    for (var obj of ft.getProperty('objects')) {
-			names.push(obj.line_name);
+			names[obj.line_name] = true;
 		    }
 		} else if (id.match(/^mgds/)) {
 		    for (var obj of ft.getProperty('objects')) {
 			for (var event of obj.events) {
-			    names.push(event.event_name);
+			    names[event.event_name] = true;
 			}
 		    }
 		}
-		var text = names.join('\n');
+		var text = 'Seismic Line: ' + Object.keys(names).join(',');
 		var pixel = lloverlay.getProjection().fromLatLngToContainerPixel(e.latLng);
 		pixel.x += 20; pixel.y += 20;
 		var latlng = lloverlay.getProjection().fromContainerPixelToLatLng(new google.maps.Point(pixel.x,pixel.y));

@@ -7,7 +7,7 @@
 		     src="http://www.marine-geo.org/imgs/{{if (access == 'limited' || access == 'restricted')}}locked.png{{else}}unlocked.png{{/if}}"
 		     title="{{if (access=='limited')}}Limited{{else (access=='restricted')}}Restricted{{else}}Open{{/if}} Access"/>
 	    </div>
-	    {{if doi}}
+	{{if doi}}
 	    <div class="u_doi"><b>Data DOI:</b>{{:doi}}</div>
 	    {{/if}}
         {{if image_url}}

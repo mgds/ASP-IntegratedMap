@@ -62,18 +62,38 @@ $(document).ready(function(){
                     if (data && $(data).hasClass("mgds_json_content")) {
                         $.get('template/mgds_template.tmpl.html').done(function(tdata){
                             var template = $.templates(tdata);
+                            var options = {
+        checkValue: function(arr,element,value){
+            for (var i=0;i<arr.length;i++) {
+                if (arr[i][element]==value) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
                             var obj = $(data).html();
                             if (obj) {
-                                mgdsMap.infowin.setContent("<div class=\"ucontent\">"+$(mgdsMap.infowin.getContent()).find(".ucontent").html()+template.render(JSON.parse(obj))+"</div>");
+                                mgdsMap.infowin.setContent("<div class=\"ucontent\">"+$(mgdsMap.infowin.getContent()).find(".ucontent").html()+template.render(JSON.parse(obj),options)+"</div>");
                             }   
                         });
                         mgdsMap.infowin.open(mgdsMap.map,mgdsMap.marker);
                     } else if (data && $(data).hasClass("utig_json_content")) {
                         $.get('template/utig_template.tmpl.html').done(function(tdata){
                             var template = $.templates(tdata);
+                            var options = {
+        checkValue: function(arr,element,value){
+            for (var i=0;i<arr.length;i++) {
+                if (arr[i][element]==value) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
                             var obj = $(data).html();
                             if (obj) {
-                                mgdsMap.infowin.setContent("<div class=\"ucontent\">"+$(mgdsMap.infowin.getContent()).find(".ucontent").html()+template.render(JSON.parse(obj))+"</div>");
+                                mgdsMap.infowin.setContent("<div class=\"ucontent\">"+$(mgdsMap.infowin.getContent()).find(".ucontent").html()+template.render(JSON.parse(obj),options)+"</div>");
                             }   
                         });
                         mgdsMap.infowin.open(mgdsMap.map,mgdsMap.marker);
@@ -97,7 +117,7 @@ $(document).ready(function(){
             "sld_url" : "http://www.marine-geo.org/services/sld/mcs_proc_sld.xml",
             "layers" : 'UTIG-Lines',
             "query_layers" : ['UTIG-DataObjects']
-        },
+        ,
         {
             "title" : "SCS",
             "sld_url" : "http://www.marine-geo.org/services/sld/scs_sld.xml",
@@ -135,7 +155,7 @@ $(document).ready(function(){
                 VERSION     : "1.0.0",
                 INFO_FORMAT : "text/html",
                 SLD         : layer['sld_url'],
-                qurl        : "http://www.marine-geo.org/services/mapserv7/mgds_data?"
+                qurl        : "/services/mapserv7/mgds_data?"
             },
             null,
             null,

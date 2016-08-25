@@ -7,8 +7,8 @@
 	       title = "{{if is_released=='f'}}Restricted{{else}}Open{{/if}} Access"
 	       />
      </div>
-     {{if doi}}
-     <div class="u_doi"><b>Data DOI:</b>{{:doi}}</div>
+     {{if data_doi}}
+     <div class="u_doi"><b>Data DOI:</b>{{:data_doi}}</div>
      {{/if}}
      {{if image_url}}
      <div class="img_box">
@@ -28,29 +28,54 @@
         {{:details}}
      </div>
      {{/if}}
-     {{if contributor_person_id}}
-     <div class="u_contrib">Contributed by {{:contributor_person_id}}</div>
+     {{if chief_scientist}}
+     <div class="u_contrib"><b>Chief Scientist:</b> {{:chief_scientist}}</div>
      {{/if}}
 	<div><b>Platform:</b> <i>{{:platform_id}} ({{:platform_type}})</i></div>
-	<div class="u_linnum"><b>Line(s): </b>
+    {{if ~checkValue(events,'event_table','entry_event_line') || ~checkValue(events,'event_table','entry_event_line_seismic')}}
+	<div class="u_linnum"><b>Line: </b>
         {{for events}}
-            <div>
+            {{if event_table == 'entry_event_line' || event_table == 'entry_event_line_seismic'}}
+            <span>
                 <a href="http://www.marine-geo.org/tools/search/RelatedData.php?event_uid={{:event_uid}}" target="_blank">{{:event_name}}</a>
-            </div>
-            {{/for}}</div>
+            </span>
+            {{/if}}
+        {{/for}}
+    </div>
+    {{/if}}
+    {{if ~checkValue(events,'event_table','entry_event_station')}}
+	<div class="u_linnum"><b>Station: </b>
+        {{for events}}
+            {{if event_table == 'entry_event_station'}}
+            <span>
+                <a href="http://www.marine-geo.org/tools/search/RelatedData.php?event_uid={{:event_uid}}" target="_blank">{{:event_name}}</a>
+            </span>
+            {{/if}}
+        {{/for}}
+    </div>
+    {{/if}}
+    {{if ~checkValue(files,'access','PUBLIC')}}
 	<div class="u_files">
         <b>Download Files</b>
         <div style="margin-left:5px" class="filecontent" id="file_{{:data_uid}}">
             {{for files}}
             {{if access == 'PUBLIC'}}
+            {{if data_uid}}
             <div>
                 <a href="http://www.marine-geo.org/tools/search/download.php?data_uid={{:data_uid}}" target="_blank">{{:file_format}} {{:data_types}}</a>
             </div>
+            {{/if}}
+            {{if data_uids}}
+            <div>
+                <a href="http://www.marine-geo.org/tools/search/download.php?data_uids={{:data_uids}}" target="_blank">{{:file_format}} {{:data_types}}</a>
+            </div>
+            {{/if}}
             {{/if}}
             {{/for}}
         </div>
 	  <a target="_blank" href="{{:data_set_url}}"> More Details &#8594;</a>
 	</div>
+    {{/if}}
       </div>
     {{/if}}
       {{/for}}

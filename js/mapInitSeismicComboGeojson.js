@@ -1,4 +1,4 @@
-/*function getParameterByName(name, url) {
+function getParameterByName(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
     var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
@@ -6,13 +6,13 @@
     if (!results) return null;
     if (!results[2]) return '';
     return decodeURIComponent(results[2].replace(/\+/g, " "));
-}*/
+}
 
 var utigDownload = function(qurl){
-    var myWindow = window.open(qurl,"_blank");
+    var myWindow = window.open(qurl);
     window.focus();
     setTimeout(function() {
-        var myWindow2 = window.open("http://www-udc.ig.utexas.edu/sdc/cart/checkout.php?action=view","_blank");
+        var myWindow2 = window.open("http://www-udc.ig.utexas.edu/sdc/cart/checkout.php?action=view");
         myWindow.close();
         myWindow2.focus();
     } , 500);
@@ -48,16 +48,27 @@ $(document).ready(function() {
     $.when(utigTemplateReq, ldeoTemplateReq).done(function(utigTmplData,ldeoTmplData) {
 	var utigTemplate = $.templates(utigTmplData[0]);
 	var ldeoTemplate = $.templates(ldeoTmplData[0]);
+    var options = {
+        checkValue: function(arr,element,value){
+            for (var i=0;i<arr.length;i++) {
+                if (arr[i][element]==value) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    };
+    var template = null;
 	var clickHandler = function(e) {
 	    var ft = e.feature;
 	    id = ft.getId();
 	    if (id.match(/^utig/)) {
-		var template = utigTemplate;
+		template = utigTemplate;
 	    } else {
-		var template = ldeoTemplate;
+		template = ldeoTemplate;
 	    }
 	    ft.toGeoJson(function(obj) {
-            var content = template.render(obj);
+            var content = template.render(obj,options);
             content = '<div class="ucontent">' + content + '</div>';
             mgdsMap.marker.setPosition(e.latLng);
             mgdsMap.marker.setMap(mgdsMap.map);
@@ -66,7 +77,7 @@ $(document).ready(function() {
 	    });
 	};
 
-	function point2LatLng(point,map) {
+	function point2LatLng(point, map) {
 	    var topRight = map.getProjection().fromLatLngToPoint(map.getBounds().getNorthEast());
 	    var bottomLeft = map.getProjection().fromLatLngToPoint(map.getBounds().getSouthWest());
 	    var scale = Math.pow(2, map.getZoom());
@@ -78,22 +89,22 @@ $(document).ready(function() {
 	    return function(e,lloverlay) {
 		var ft = e.feature;
 		var id = ft.getId();
-		var names = {};
+		var names = [];
 		if (id.match(/^utig/)) {
 		    for (var obj of ft.getProperty('objects')) {
-			names[obj.line_name] = true;
+			names.push(obj.line_name);
 		    }
-		} else if (id.match(/^ldeo/)) {
+		} else if (id.match(/^mgds/)) {
 		    for (var obj of ft.getProperty('objects')) {
 			for (var event of obj.events) {
-			    names[event.event_name] = true;
+			    names.push(event.event_name);
 			}
 		    }
 		}
-		var text = "Seismic Line: " + Object.keys(names).join(',');
+		var text = names.join('\n');
 		var pixel = lloverlay.getProjection().fromLatLngToContainerPixel(e.latLng);
 		pixel.x += 20; pixel.y += 20;
-		var latlng = point2LatLng(pixel,mgdsMap.map);
+		var latlng = lloverlay.getProjection().fromContainerPixelToLatLng(new google.maps.Point(pixel.x,pixel.y));
 		var obj = {
 		    text: text,
 		    position: latlng,
@@ -103,7 +114,6 @@ $(document).ready(function() {
 	    }
 	}
 	
-	//var entry_id = getParameterByName('entry_id');
 	var utig =  $('#mapc').hasClass('utig');
 	var ldeo = $('#mapc').hasClass('ldeo');
 	

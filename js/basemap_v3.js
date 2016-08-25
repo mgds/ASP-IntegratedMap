@@ -308,6 +308,7 @@ MGDSMapClient.prototype.GeoJSONOverlay = function(opts) {
     var control_position = opts.control_position;
     var grp_name = opts.grp_name;
     var hover_text_fun = opts.hover_text_fun;
+    var click_text_fun = opts.click_text_fun;
     var selectedStyle = opts.selectedStyle || opts.defaultStyle;
 
     function processPoints(geometry, callback, thisArg) {
@@ -345,8 +346,12 @@ MGDSMapClient.prototype.GeoJSONOverlay = function(opts) {
 		processPoints(ft.getGeometry(), bounds.extend, bounds);
 	    });
 	    self.map.fitBounds(bounds);
-	    
-	    data.setMap(self.map);
+
+	    if (onoff) {
+		data.setMap(self.map);
+	    } else {
+		data.setMap(null);
+	    }
 	    self.controls.geojsonLayer(title,onoff,grp_name,control_position);
 	    
 	    var lloverlay = new google.maps.OverlayView();
@@ -369,6 +374,7 @@ MGDSMapClient.prototype.GeoJSONOverlay = function(opts) {
 	    
 	    if (hover_text_fun) {
 		data.addListener('mouseover', function(e) {
+		    if (self.ml) self.ml.setMap(null);
 		    var hover_text_props = hover_text_fun(e,lloverlay);
 		    hover_text_props.map = self.map;
 		    self.ml = new MapLabel(hover_text_props);
@@ -376,7 +382,19 @@ MGDSMapClient.prototype.GeoJSONOverlay = function(opts) {
 		data.addListener('mouseout', function(e) {
 		    self.ml.setMap(null);
 		});
-	    }		
+	    }
+
+	    if (click_text_fun) {
+		data.addListener('click', function(e) {
+		    if (self.ml) self.ml.setMap(null);
+		    var click_text_props = click_text_fun(e,lloverlay);
+		    click_text_props.map = self.map;
+		    self.ml = new MapLabel(click_text_props);
+		});
+		data.addListener('mouseout', function(e) {
+		    self.ml.setMap(null);
+		});
+	    }
 	    
 	    if (click) {
 		data.addListener('click', function(e) {
@@ -491,7 +509,9 @@ function controlOverlay(mapClient,hide) {
 	});
 }
 
-function LayerGroup(title) {
+function LayerGroup(opts) {
+    var title = opts.title;
+    var exclusive = opts.exclusive || false;
     this.div = document.createElement("div");
     this.div.innerHTML = "<div class=\"layerdivtitle\">" + title + "</div>";
     this.layerContainer = document.createElement("div");
@@ -526,8 +546,8 @@ LayerGroup.prototype.addLayer = function(title,onoff,pos,classname) {
     $(this.div).show();
 }
 
-controlOverlay.prototype.addLayerGroup = function(title,pos) {
-    var grp = new LayerGroup(title);
+controlOverlay.prototype.addLayerGroup = function(opts,pos) {
+    var grp = new LayerGroup(opts);
     grp.div.setAttribute('data-position',pos);
     $(grp.div).hide(); // Hide until layer is added
     var children = $(this.layersDiv).children();
@@ -544,7 +564,7 @@ controlOverlay.prototype.addLayerGroup = function(title,pos) {
 	    this.layersDiv.insertBefore(grp.div, children[i])
 	}
     }
-    this.layerGroups[title] = grp;
+    this.layerGroups[opts.title] = grp;
 }
 
 controlOverlay.prototype.legendLayer = function(html) {
@@ -575,15 +595,17 @@ controlOverlay.prototype.baseLayer = function(title,onoff,grp_name,lyr_pos) {
     grp_name = grp_name || 'Base Layers';
     var self = this;
     if (!(grp_name in this.layerGroups)) {
-	this.addLayerGroup(grp_name);
+	this.addLayerGroup({title:grp_name});
     }
     var grp = this.layerGroups[grp_name];
+    
     grp.addLayer(title,onoff,lyr_pos,'baselayer');
     if (!this.bases) {
 	//this.layersDiv.appendChild(this.basediv);
 	google.maps.event.addListener(self.mapClient.map, 'click', function(event) {
 	    self.mapClient.selectPoint(event.latLng);
 	});
+	
 	$(document).on('click','.baselayer',function(){
 	    var idx = $(this).attr('title');
 	    if ($(this).hasClass('off')) {
@@ -614,40 +636,62 @@ controlOverlay.prototype.baseLayer = function(title,onoff,grp_name,lyr_pos) {
     grp.layers[title].click();
 }
 
+controlOverlay.prototype.geojsonOff = function(grp_title,title) {
+    var lyrctrl = this.layerGroups[grp_title].layers[title]
+    $(lyrctrl).css('background-color', '#FFFFFF');
+    this.mapClient.data_layers[title].setMap(null);
+}
+
+controlOverlay.prototype.geojsonOn = function(grp_title,title) {
+    var lyrctrl = this.layerGroups[grp_title].layers[title]
+    $(lyrctrl).css('background-color', '#BBBBBB');
+    this.mapClient.data_layers[title].setMap(this.mapClient.map);
+}
+
 controlOverlay.prototype.geojsonLayer = function(title,onoff,grp_name,lyr_pos) {
     grp_name = grp_name || 'Overlay Layers';
     var self = this;
     if (!(grp_name in this.layerGroups)) {
-	this.addLayerGroup(grp_name);
+	this.addLayerGroup({title:grp_name});
     }
     var grp = this.layerGroups[grp_name];
     grp.addLayer(title,onoff,lyr_pos,'');
-    
+
+    var self = this;
     $(grp.layers[title]).on('click', function() {
 	var dataLayer = self.mapClient.data_layers[title];
 	if (dataLayer.getMap()) {
-	    $(this).css('background-color', '#FFFFFF');
-	    dataLayer.setMap(null);
+	    self.geojsonOff(grp_name,title);
 	} else {
-	    $(this).css('background-color', '#BBBBBB');
-	    dataLayer.setMap(self.mapClient.map);
+	    self.geojsonOn(grp_name,title);
 	}
     });
-    /*if (!this.overlays) {
-	if (!this.clusters) {
-	    this.layersDiv.appendChild(this.overlaydiv);
-	}
-	this.overlays = true;
-    }*/
+}
+
+controlOverlay.prototype.overlayOn = function(grp_name,title,opts) {
+    var lyrctrl = this.layerGroups[grp_name].layers[title];
+    $(lyrctrl).removeClass('off');
+    $(lyrctrl).css('background-color','#BBBBBB');
+    var url = this.mapClient.layers[title]['url'];
+    this.mapClient.layers[title]['overlay'] = new google.maps.KmlLayer(url,opts);
+    this.mapClient.layers[title]['overlay'].setMap(self.mapClient.map);
+}
+
+controlOverlay.prototype.overlayOff = function(grp_name,title) {
+    var lyrctrl = this.layerGroups[grp_name].layers[title];
+    $(lyrctrl).css('background-color', '#BBBBBB');
+    $(lyrctrl).addClass('off');
+    this.mapClient.layers[title]['overlay'].setMap(self.mapClient.map);
 }
 
 controlOverlay.prototype.overlayLayer = function(title,onoff,opts) {
     var grp_name = opts.grp_name || 'Overlay Layers';
     var self = this;
     if (!(grp_name in this.layerGroups)) {
-	this.addLayerGroup(grp_name);
+	this.addLayerGroup({title: grp_name});
     }
     var grp = this.layerGroups[grp_name];
+    var self = this;
     grp.addLayer(title,onoff,opts.lyr_pos,'overlay');
 	if (!this.overlays) {
 		if (!this.clusters)
@@ -655,19 +699,16 @@ controlOverlay.prototype.overlayLayer = function(title,onoff,opts) {
 		$(document).on('click','.overlay',function(){
 			var idx = $(this).attr('title');
 			if ($(this).hasClass('off')) {
-				$(this).removeClass('off');
-				$(this).css('background-color','#BBBBBB');
-				var url = self.mapClient.layers[idx]['url'];
-				self.mapClient.layers[idx]['overlay'] = new google.maps.KmlLayer(url,opts);
-				self.mapClient.layers[idx]['overlay'].setMap(self.mapClient.map);
+			    self.overlayOn(grp_name,idx,opts);
 			} else {
-				if( self.mapClient.layers[idx]['overlay'].getMap() ){
+			    self.overlayOff(grp_name,idx);
+				/*if( self.mapClient.layers[idx]['overlay'].getMap() ){
 					$(this).css('background-color','#FFFFFF');
 					self.mapClient.layers[idx]['overlay'].setMap(null);
 				}else{
 					$(this).css('background-color','#BBBBBB');
 					self.mapClient.layers[idx]['overlay'].setMap(self.mapClient.map);
-				}
+				}*/
 			}
 		});
 		this.overlays=true
@@ -685,7 +726,7 @@ controlOverlay.prototype.clusterLayer = function(title,onoff,grp_name,lyr_pos) {
     grp_name = grp_name || 'Overlay Layers';
     var self = this;
     if (!(grp_name in this.layerGroups)) {
-	this.addLayerGroup(grp_name);
+	this.addLayerGroup({title: grp_name});
     }
     var grp = this.layerGroups[grp_name];
     grp.addLayer(title,onoff,lyr_pos,'cluster');
@@ -803,6 +844,7 @@ var Graticule = (function() {
     function latLngToPixel(overlay, lat, lng) {
       return overlay.getProjection().fromLatLngToDivPixel(new google.maps.LatLng(lat, lng));
     };
+    
     function gridInterval(dDeg, mins) {
         return leThenReturn(Math.ceil(dDeg / numLines * 6000) / 100, mins,
                         60 * 45) / 60;

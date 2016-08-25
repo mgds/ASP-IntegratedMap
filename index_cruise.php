@@ -6,7 +6,7 @@
 	<meta name="Keywords" content="Antartic, Bathymetry, MARGINS, Long Island Sound, Seismic Reflection, GeoMapApp" />
 	<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
 	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyATYahozDIlFIM1mO7o66AocXi72mkPT18&amp;sensor=false" type="text/javascript"></script>
-	<script src="js/js-map-label/src/maplabel.js"></script>
+	<script src="js/maplabel.js"></script>
 
 	<script src="js/basemap_v3.js" type="text/javascript"></script>
  	<script src="js/jsrender.js" type="text/javascript"></script>

@@ -74,7 +74,10 @@ $(document).ready(function(){
     };
                             var obj = $(data).html();
                             if (obj) {
-                                mgdsMap.infowin.setContent("<div class=\"ucontent\">"+$(mgdsMap.infowin.getContent()).find(".ucontent").html()+template.render(JSON.parse(obj),options)+"</div>");
+								var existingContent = $(mgdsMap.infowin.getContent()).find(".ucontent").html();
+                                if (typeof existingContent === "undefined")
+                                    existingContent = '';
+                                mgdsMap.infowin.setContent("<div class=\"ucontent\">"+existingContent+template.render(JSON.parse(obj),options)+"</div>");
                             }   
                         });
                         mgdsMap.infowin.open(mgdsMap.map,mgdsMap.marker);
@@ -93,7 +96,10 @@ $(document).ready(function(){
     };
                             var obj = $(data).html();
                             if (obj) {
-                                mgdsMap.infowin.setContent("<div class=\"ucontent\">"+$(mgdsMap.infowin.getContent()).find(".ucontent").html()+template.render(JSON.parse(obj),options)+"</div>");
+								var existingContent = $(mgdsMap.infowin.getContent()).find(".ucontent").html();
+                                if (typeof existingContent === "undefined")
+                                    existingContent = '';
+                                mgdsMap.infowin.setContent("<div class=\"ucontent\">"+existingContent+template.render(JSON.parse(obj),options)+"</div>");
                             }   
                         });
                         mgdsMap.infowin.open(mgdsMap.map,mgdsMap.marker);
@@ -155,7 +161,7 @@ $(document).ready(function(){
                 VERSION     : "1.0.0",
                 INFO_FORMAT : "text/html",
                 SLD         : layer['sld_url'],
-                qurl        : "/services/mapserv7/mgds_data?"
+                qurl        : "http://www.marine-geo.org/services/mapserv7/mgds_data?"
             },
             null,
             null,

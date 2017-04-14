@@ -8,7 +8,7 @@ and open the template in the editor.
     Author     : johnjon
 */
 .ucontent {
-     height:300px;
+     max-height:350px;
      overflow-y:scroll;
      font: 0.95em/1.3em "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

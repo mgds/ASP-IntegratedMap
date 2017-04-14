@@ -174,7 +174,7 @@ MGDSMapClient.prototype.MGDSLogo = function(linkhref,linkclass,imgsrc,imgtitle,i
 	this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(mgdsDiv);
 }
 
-MGDSMapClient.prototype.overlayWMS = function(url,layer,name,format,clickevent,onoff,legend_url,clickcallback) {
+MGDSMapClient.prototype.overlayWMS = function(url,layer,name,format,clickevent,onoff,legend_url,clickcallback,grp) {
 	var tile = new TileData(this.map,url,layer);
 	if (format)
 		tile.format=format;
@@ -196,9 +196,36 @@ MGDSMapClient.prototype.overlayWMS = function(url,layer,name,format,clickevent,o
 	if (legend_url) {
 		this.mtoverlays[name]['legend_url'] = legend_url;
 	}
-	this.controls.baseLayer(name,this.baseLayersbool);
+	this.controls.baseLayer(name,this.baseLayersbool,grp);
 	this.baseLayersbool = false;	
-}
+};
+
+MGDSMapClient.prototype.overlayESRI = function(url,layer,name,format,onoff,grp) {
+	var tile = new EsriData(this.map,url,layer);
+	if (format)
+		tile.format=format;
+	this.mtoverlays[name] = new Array();
+	this.mtoverlays[name]['esrilayer'] = {
+		alt: name,
+		getTileUrl: tile.GetTileUrl,
+		isPng: false,
+		maxZoom: 22,
+		minZoom: 1,
+		name: name,
+		tileSize: new google.maps.Size(256, 256)
+	};
+	if (onoff)
+		this.baseLayersbool = false;
+    
+	this.mtoverlays[name]['overlay'] = new google.maps.ImageMapType(this.mtoverlays[name]['esrilayer']);
+	//this.mtoverlays[name]['clickevent'] = clickevent;
+    //this.mtoverlays[name]['callback'] = clickcallback;
+	/*if (legend_url) {
+		this.mtoverlays[name]['legend_url'] = legend_url;
+	}*/
+	this.controls.baseLayer(name,this.baseLayersbool,grp);
+	this.baseLayersbool = false;	
+};
 
 // Change the tile url
 MGDSMapClient.prototype.setTileData = function(name,url,layer) {
@@ -447,6 +474,43 @@ function TileData(map,baseUrl,layer) {
 		return lURL;
 	}
 }
+
+function EsriData(map,baseUrl,layer) {
+	var self = this;
+	this.map = map;
+	this.baseUrl = baseUrl;
+	this.format = "png";
+	this.layer=layer;
+	this.baseOpts = "&transparent=true&size=256,256&f=image";
+	this.GetTileUrl = function(tile, zoom) {
+		var projection = self.map.getProjection();
+		var zpow = Math.pow(2, zoom);
+		var ur = new google.maps.Point( (tile.x+1)*256.0/zpow , (tile.y+1)*256.0/zpow );
+		var ll = new google.maps.Point( tile.x*256.0/zpow , tile.y*256.0/zpow );
+		var urw = projection.fromPointToLatLng(ur);
+		var llw = projection.fromPointToLatLng(ll);
+		var bbox;
+		var lSRS;
+		var urwlng = (urw.lng() == -180)? 180: urw.lng();
+		var llwlng = (llw.lng() == 180)? -180: llw.lng();
+		if (zoom < 5) {
+			bbox=dd2MercMetersLng(llwlng)+","+dd2MercMetersLat(urw.lat())+","+dd2MercMetersLng(urwlng)+","+dd2MercMetersLat(llw.lat());
+			lSRS="102100";// use mercator projection when viewimg large areas
+		} else {
+			bbox = llwlng + ','+urw.lat()+','+urwlng+','+llw.lat();
+			lSRS="4326";// use geographic projection when viewing details
+		}
+		var lURL = self.baseUrl + self.baseOpts
+		+"&layers="+self.layer
+		+"&format="+self.format
+		+"&imageSR="+lSRS
+        +"&bboxSR="+lSRS
+		+"&bbox="+bbox
+		console.log(lURL);
+		return lURL;
+	}
+}
+
 function controlOverlay(mapClient,hide) {
 	this.mapClient = mapClient;
 	this.map = mapClient.map;
@@ -511,7 +575,6 @@ function controlOverlay(mapClient,hide) {
 
 function LayerGroup(opts) {
     var title = opts.title;
-    var exclusive = opts.exclusive || false;
     this.div = document.createElement("div");
     this.div.innerHTML = "<div class=\"layerdivtitle\">" + title + "</div>";
     this.layerContainer = document.createElement("div");
@@ -565,6 +628,15 @@ controlOverlay.prototype.addLayerGroup = function(opts,pos) {
 	}
     }
     this.layerGroups[opts.title] = grp;
+}
+
+controlOverlay.prototype.removeLayerGroup = function(title) {
+    $(this.layerGroups[title].div).remove();
+    delete this.layerGroups[title];
+}
+
+controlOverlay.prototype.hasLayerGroup = function(title) {
+    return title in this.layerGroups;
 }
 
 controlOverlay.prototype.legendLayer = function(html) {
@@ -639,13 +711,17 @@ controlOverlay.prototype.baseLayer = function(title,onoff,grp_name,lyr_pos) {
 controlOverlay.prototype.geojsonOff = function(grp_title,title) {
     var lyrctrl = this.layerGroups[grp_title].layers[title]
     $(lyrctrl).css('background-color', '#FFFFFF');
-    this.mapClient.data_layers[title].setMap(null);
+    if (this.mapClient.data_layers[title]) {
+	this.mapClient.data_layers[title].setMap(null);
+    }
 }
 
 controlOverlay.prototype.geojsonOn = function(grp_title,title) {
     var lyrctrl = this.layerGroups[grp_title].layers[title]
     $(lyrctrl).css('background-color', '#BBBBBB');
-    this.mapClient.data_layers[title].setMap(this.mapClient.map);
+    if (this.mapClient.data_layers[title]) {
+	this.mapClient.data_layers[title].setMap(this.mapClient.map);
+    }
 }
 
 controlOverlay.prototype.geojsonLayer = function(title,onoff,grp_name,lyr_pos) {
@@ -674,14 +750,16 @@ controlOverlay.prototype.overlayOn = function(grp_name,title,opts) {
     $(lyrctrl).css('background-color','#BBBBBB');
     var url = this.mapClient.layers[title]['url'];
     this.mapClient.layers[title]['overlay'] = new google.maps.KmlLayer(url,opts);
-    this.mapClient.layers[title]['overlay'].setMap(self.mapClient.map);
+    this.mapClient.layers[title]['overlay'].setMap(this.mapClient.map);
 }
 
 controlOverlay.prototype.overlayOff = function(grp_name,title) {
     var lyrctrl = this.layerGroups[grp_name].layers[title];
-    $(lyrctrl).css('background-color', '#BBBBBB');
+    $(lyrctrl).css('background-color', '#FFFFFF');
     $(lyrctrl).addClass('off');
-    this.mapClient.layers[title]['overlay'].setMap(self.mapClient.map);
+    if (this.mapClient.layers[title] && this.mapClient.layers[title]['overlay']) {
+	this.mapClient.layers[title]['overlay'].setMap(null);
+    }
 }
 
 controlOverlay.prototype.overlayLayer = function(title,onoff,opts) {

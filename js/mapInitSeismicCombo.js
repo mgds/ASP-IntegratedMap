@@ -48,6 +48,7 @@ $(document).ready(function(){
             });
         }).done(function() {
             var msgs = [];
+            
             if (layers.length == 1) {
                 msgs = [ arguments[0] ];
             } else {
@@ -58,23 +59,24 @@ $(document).ready(function(){
                 mgdsMap.marker.setMap(mgdsMap.map);
                 mgdsMap.infowin.setContent("");
                 $.each(msgs,function(i,v){
+                    console.log(v);
                     var data = $.parseHTML(v);
                     if (data && $(data).hasClass("mgds_json_content")) {
-                        $.get('template/mgds_template.tmpl.html').done(function(tdata){
+                        $.get('mgds_template.tmpl.html').done(function(tdata){
                             var template = $.templates(tdata);
                             var options = {
-        checkValue: function(arr,element,value){
-            for (var i=0;i<arr.length;i++) {
-                if (arr[i][element]==value) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    };
+                                checkValue: function(arr,element,value){
+                                    for (var i=0;i<arr.length;i++) {
+                                        if (arr[i][element]==value) {
+                                            return true;
+                                        }
+                                    }
+                                    return false;
+                                }
+                            };
                             var obj = $(data).html();
                             if (obj) {
-								var existingContent = $(mgdsMap.infowin.getContent()).find(".ucontent").html();
+                                var existingContent = $(mgdsMap.infowin.getContent()).find(".ucontent").html();
                                 if (typeof existingContent === "undefined")
                                     existingContent = '';
                                 mgdsMap.infowin.setContent("<div class=\"ucontent\">"+existingContent+template.render(JSON.parse(obj),options)+"</div>");
@@ -82,21 +84,21 @@ $(document).ready(function(){
                         });
                         mgdsMap.infowin.open(mgdsMap.map,mgdsMap.marker);
                     } else if (data && $(data).hasClass("utig_json_content")) {
-                        $.get('template/utig_template.tmpl.html').done(function(tdata){
+                        $.get('utig_template.tmpl.html').done(function(tdata){
                             var template = $.templates(tdata);
                             var options = {
-        checkValue: function(arr,element,value){
-            for (var i=0;i<arr.length;i++) {
-                if (arr[i][element]==value) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    };
+                                checkValue: function(arr,element,value){
+                                    for (var i=0;i<arr.length;i++) {
+                                        if (arr[i][element]==value) {
+                                            return true;
+                                        }
+                                    }
+                                    return false;
+                                }
+                            };
                             var obj = $(data).html();
                             if (obj) {
-								var existingContent = $(mgdsMap.infowin.getContent()).find(".ucontent").html();
+                                var existingContent = $(mgdsMap.infowin.getContent()).find(".ucontent").html();
                                 if (typeof existingContent === "undefined")
                                     existingContent = '';
                                 mgdsMap.infowin.setContent("<div class=\"ucontent\">"+existingContent+template.render(JSON.parse(obj),options)+"</div>");
@@ -114,6 +116,12 @@ $(document).ready(function(){
     var layers = [
         {
             "title" : "MCS Field",
+            "sld_url" : "http://www.marine-geo.org/services/sld/mcs_slde.xml",
+            "layers" : 'MGDS-DataSetsLines,UTIG-Lines',
+            "query_layers" : ['MGDS-DataObjectsLines','UTIG-DataObjects']
+        },
+        {
+            "title" : "MCS Field (Old)",
             "sld_url" : "http://www.marine-geo.org/services/sld/mcs_sld.xml",
             "layers" : 'MGDS-DataSets,UTIG-Lines',
             "query_layers" : ['MGDS-DataObjects','UTIG-DataObjects']
@@ -126,18 +134,36 @@ $(document).ready(function(){
         },
         {
             "title" : "SCS",
+            "sld_url" : "http://www.marine-geo.org/services/sld/scs_slde.xml",
+            "layers" : 'MGDS-DataSetsLines,UTIG-Lines',
+            "query_layers" : ['MGDS-DataObjectsLines','UTIG-DataObjects']
+        },
+        {
+            "title" : "SCS (Old)",
             "sld_url" : "http://www.marine-geo.org/services/sld/scs_sld.xml",
             "layers" : 'MGDS-DataSets,UTIG-Lines',
             "query_layers" : ['MGDS-DataObjects','UTIG-DataObjects']
         },
         {
             "title" : "OBS & Other Wide Angle",
+            "sld_url" : "http://www.marine-geo.org/services/sld/obs_slde.xml",
+            "layers" : 'MGDS-DataObjects-OBS,MGDS-DataObjects-Points-OBS,MGDS-DataSets,MGDS-DataStations-OBS,MGDS-DataObjectsStations-Computed,MGDS-DataSets-Points,UTIG-Lines,UTIG-Points',
+            "query_layers" : ['MGDS-DataObjects-OBS','MGDS-DataObjects-Points-OBS','MGDS-DataObjects','UTIG-DataObjects']
+        },
+        {
+            "title" : "OBS & Other Wide Angle (Old)",
             "sld_url" : "http://www.marine-geo.org/services/sld/obs_sld.xml",
             "layers" : 'MGDS-DataSets,MGDS-DataSets-Points,UTIG-Lines,UTIG-Points',
             "query_layers" : ['MGDS-DataObjects','UTIG-DataObjects']
         },
         {
             "title" : "Subbottom",
+            "sld_url" : "http://www.marine-geo.org/services/sld/chirps_sld.xml",
+            "layers" : 'MGDS-DataSets,UTIG-Lines',
+            "query_layers" : ['MGDS-DataObjects','UTIG-DataObjects']
+        },
+        {
+            "title" : "Subbottom (Old)",
             "sld_url" : "http://www.marine-geo.org/services/sld/chirps_sld.xml",
             "layers" : 'MGDS-DataSets,UTIG-Lines',
             "query_layers" : ['MGDS-DataObjects','UTIG-DataObjects']
@@ -161,7 +187,7 @@ $(document).ready(function(){
                 VERSION     : "1.0.0",
                 INFO_FORMAT : "text/html",
                 SLD         : layer['sld_url'],
-                qurl        : "http://www.marine-geo.org/services/mapserv7/mgds_data?"
+                qurl        : "/services/mapserv7/mgds_data?"
             },
             null,
             null,

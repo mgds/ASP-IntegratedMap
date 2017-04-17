@@ -42,8 +42,8 @@ $(document).ready(function() {
     mgdsMap.mapInit();
     mgdsMap.baseMap();
 
-    var utigTemplateReq = $.get('http://dev.marine-geo.org/services/templates/utig_template.tmpl.html')
-    var ldeoTemplateReq = $.get('http://dev.marine-geo.org/services/templates/mgds_template.tmpl.html')
+    var utigTemplateReq = $.get('http://www.marine-geo.org/services/templates/utig_template.tmpl.html')
+    var ldeoTemplateReq = $.get('http://www.marine-geo.org/services/templates/mgds_template.tmpl.html')
 
     $.when(utigTemplateReq, ldeoTemplateReq).done(function(utigTmplData,ldeoTmplData) {
 	var utigTemplate = $.templates(utigTmplData[0]);

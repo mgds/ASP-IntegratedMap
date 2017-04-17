@@ -62,7 +62,7 @@ $(document).ready(function(){
                     console.log(v);
                     var data = $.parseHTML(v);
                     if (data && $(data).hasClass("mgds_json_content")) {
-                        $.get('mgds_template.tmpl.html').done(function(tdata){
+                        $.get('template/mgds_template.tmpl.html').done(function(tdata){
                             var template = $.templates(tdata);
                             var options = {
                                 checkValue: function(arr,element,value){
@@ -84,7 +84,7 @@ $(document).ready(function(){
                         });
                         mgdsMap.infowin.open(mgdsMap.map,mgdsMap.marker);
                     } else if (data && $(data).hasClass("utig_json_content")) {
-                        $.get('utig_template.tmpl.html').done(function(tdata){
+                        $.get('template/utig_template.tmpl.html').done(function(tdata){
                             var template = $.templates(tdata);
                             var options = {
                                 checkValue: function(arr,element,value){
@@ -187,7 +187,7 @@ $(document).ready(function(){
                 VERSION     : "1.0.0",
                 INFO_FORMAT : "text/html",
                 SLD         : layer['sld_url'],
-                qurl        : "/services/mapserv7/mgds_data?"
+                qurl        : "http://www.marine-geo.org/services/mapserv7/mgds_data?"
             },
             null,
             null,

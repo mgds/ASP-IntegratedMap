@@ -62,7 +62,7 @@ $(document).ready(function(){
                     console.log(v);
                     var data = $.parseHTML(v);
                     if (data && $(data).hasClass("mgds_json_content")) {
-                        $.get('template/mgds_template.tmpl.html').done(function(tdata){
+                        $.get('http://www.marine-geo.org/services/templates/mgds_template.tmpl.html').done(function(tdata){
                             var template = $.templates(tdata);
                             var options = {
                                 checkValue: function(arr,element,value){
@@ -84,7 +84,7 @@ $(document).ready(function(){
                         });
                         mgdsMap.infowin.open(mgdsMap.map,mgdsMap.marker);
                     } else if (data && $(data).hasClass("utig_json_content")) {
-                        $.get('template/utig_template.tmpl.html').done(function(tdata){
+                        $.get('http://www.marine-geo.org/services/templates/utig_template.tmpl.html').done(function(tdata){
                             var template = $.templates(tdata);
                             var options = {
                                 checkValue: function(arr,element,value){

@@ -117,57 +117,33 @@ $(document).ready(function(){
         {
             "title" : "MCS Field",
             "sld_url" : "http://www.marine-geo.org/services/sld/mcs_slde.xml",
-            "layers" : 'MGDS-DataSetsLines,UTIG-Lines',
+            "layers" : 'MGDS-DataSetsLines,UTIG-DataSet',
             "query_layers" : ['MGDS-DataObjectsLines','UTIG-DataObjects']
         },
-        /*{
-            "title" : "MCS Field (Old)",
-            "sld_url" : "http://www.marine-geo.org/services/sld/mcs_sld.xml",
-            "layers" : 'MGDS-DataSets,UTIG-Lines',
-            "query_layers" : ['MGDS-DataObjects','UTIG-DataObjects']
-        },*/
         {
             "title" : "MCS Processed",
             "sld_url" : "http://www.marine-geo.org/services/sld/mcs_proc_sld.xml",
-            "layers" : 'UTIG-Lines',
+            "layers" : 'UTIG-DataSet',
             "query_layers" : ['UTIG-DataObjects']
         },
         {
             "title" : "SCS",
             "sld_url" : "http://www.marine-geo.org/services/sld/scs_slde.xml",
-            "layers" : 'MGDS-DataSetsLines,UTIG-Lines',
+            "layers" : 'MGDS-DataSetsLines,UTIG-DataSet',
             "query_layers" : ['MGDS-DataObjectsLines','UTIG-DataObjects']
         },
-        /*{
-            "title" : "SCS (Old)",
-            "sld_url" : "http://www.marine-geo.org/services/sld/scs_sld.xml",
-            "layers" : 'MGDS-DataSets,UTIG-Lines',
-            "query_layers" : ['MGDS-DataObjects','UTIG-DataObjects']
-        },*/
         {
-            "title" : "OBS & Other Wide Angle",
+            "title" : "OBS, Sonobuoy & ESP",
             "sld_url" : "http://www.marine-geo.org/services/sld/obs_slde.xml",
-            "layers" : 'MGDS-DataObjects-OBS,MGDS-DataObjects-Points-OBS,MGDS-DataSets,MGDS-DataStations-OBS,MGDS-DataObjectsStations-Computed,MGDS-DataSets-Points,UTIG-Lines,UTIG-Points',
+            "layers" : 'MGDS-DataObjects-OBS,MGDS-DataObjects-Points-OBS,MGDS-DataSets,MGDS-DataStations-OBS,MGDS-DataObjectsStations-Computed,MGDS-DataSets-Points,UTIG-DataSet,UTIG-Points',
             "query_layers" : ['MGDS-DataObjects-OBS','MGDS-DataObjects-Points-OBS','MGDS-DataObjects','UTIG-DataObjects']
         },
-        /*{
-            "title" : "OBS & Other Wide Angle (Old)",
-            "sld_url" : "http://www.marine-geo.org/services/sld/obs_sld.xml",
-            "layers" : 'MGDS-DataSets,MGDS-DataSets-Points,UTIG-Lines,UTIG-Points',
-            "query_layers" : ['MGDS-DataObjects','UTIG-DataObjects']
-        },*/
         {
             "title" : "Subbottom",
             "sld_url" : "http://www.marine-geo.org/services/sld/chirps_sld.xml",
-            "layers" : 'MGDS-DataSets,UTIG-Lines',
+            "layers" : 'MGDS-DataSets,UTIG-DataSet',
             "query_layers" : ['MGDS-DataObjects','UTIG-DataObjects']
         },
-        /*{
-            "title" : "Subbottom (Old)",
-            "sld_url" : "http://www.marine-geo.org/services/sld/chirps_sld.xml",
-            "layers" : 'MGDS-DataSets,UTIG-Lines',
-            "query_layers" : ['MGDS-DataObjects','UTIG-DataObjects']
-        }*/
     ];
     
     layers.forEach(function(layer,idx){

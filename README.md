@@ -24,7 +24,7 @@ Check out the Integrated Seismic Map in action at: http://www.marine-geo.org/por
 
 ## Installation
 
-To install, simply download and follow the example in index.html to integrate into a web page.
+To install, simply download and follow the example in index.html to integrate the map interface into a web page. To launch map interface for a single cruise, follow the example in index_cruise.php. 
 
 ## Issues
 

@@ -2,14 +2,11 @@
 <html>
 <head>
 	<title>ASP Cruise Map Interface</title>
-	<meta name="Description" content="The Marine Geoscience Data System provides access to data portals for the NSF-supported programs, projects and data centers." />
-	<meta name="Keywords" content="Antartic, Bathymetry, MARGINS, Long Island Sound, Seismic Reflection, GeoMapApp" />
-	<script type="text/javascript" src="js/jquery-1.9.1.js"></script>
-	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyATYahozDIlFIM1mO7o66AocXi72mkPT18&amp;sensor=false" type="text/javascript"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=[GOOGLE PUBLIC API KEY]&amp;sensor=false" type="text/javascript"></script>
 	<script src="js/maplabel.js"></script>
-
 	<script src="js/basemap_v3.js" type="text/javascript"></script>
- 	<script src="js/jsrender.js" type="text/javascript"></script>
+ 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.84/jsrender.min.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		var entry_id = <?php echo json_encode($_GET['cruiseln']); ?>;
 	</script>

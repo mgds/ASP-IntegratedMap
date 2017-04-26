@@ -1,17 +1,13 @@
 # ASP-IntegratedMap
 
-This map interface was developed as part of the Academic Seismic Portal of the Marine Geoscience Data System ([MGDS](http://www.marine-geo.org)). This repository
-contains the components necessary to launch the integrated map interface on any webopage. The map interface relies on web 
-services developed and maintained as part of the MGDS.
+This map interface was developed as part of the Academic Seismic Portal of the Marine Geoscience Data System ([MGDS](http://www.marine-geo.org)).  The Academic Seismic Portal (ASP) is sponsored by the National Science Foundation to organize active source seismic field data into a modern relational data management system accessible through the Internet. The system is designed principally for academic scientific use.  This repository contains the components necessary to launch the integrated map interface on any webpage. The map interface relies on web services developed and maintained as part of the [MGDS](http://www.marine-geo.org).
 
 ## Releases and Downloads
-
-+ 1.1.0 - Released April 14, 2017.
-+ 1.0.0 - Released August 25, 2016. Initial release to enable integrated access to ASP data from a single cruise
-
++ 1.1.0 - Released April 14, 2017. Updated to enable access to all ASP holdings based on data type.
++ 1.0.0 - Released August 25, 2016. Initial release to enable integrated access to ASP data from a single cruise.
 
 ## Demo
-Check out the Integrated Map in action at: http://www.marine-geo.org/portals/seismic/
+Check out the Integrated Seismic Map in action at: http://www.marine-geo.org/portals/seismic/
 
 ## Features
 + Uses Google Maps as the map client
@@ -19,12 +15,11 @@ Check out the Integrated Map in action at: http://www.marine-geo.org/portals/sei
 + Interactive map overlays with links to download data files
 
 ## Requirements
-+ Google Maps API
-+
++ Google Maps javascript interface
++ jQuery 1.9.1
 
 ## Installation
-
-See the installation instructions on the wiki.
+To install, simply download and 
 
 ## Issues
 

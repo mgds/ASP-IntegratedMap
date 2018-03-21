@@ -171,6 +171,12 @@ $(document).ready(function(){
         );
     });
 
+	mgdsMap.overlayESRI(
+        "http://maps.ngdc.noaa.gov/arcgis/rest/services/Sample_Index/MapServer/export?layerDefs=0:FACILITY_CODE%3D%27IODP%27",
+        "0",
+        "IODP Drill Holes",
+        "png"
+    );
+
     mgdsMap.overlayControl();
-    
 });

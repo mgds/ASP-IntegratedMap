@@ -495,7 +495,7 @@ function EsriData(map,baseUrl,layer) {
 		var llwlng = (llw.lng() == 180)? -180: llw.lng();
 		if (zoom < 5) {
 			bbox=dd2MercMetersLng(llwlng)+","+dd2MercMetersLat(urw.lat())+","+dd2MercMetersLng(urwlng)+","+dd2MercMetersLat(llw.lat());
-			lSRS="102100";// use mercator projection when viewimg large areas
+			lSRS="54004";// use mercator projection when viewimg large areas
 		} else {
 			bbox = llwlng + ','+urw.lat()+','+urwlng+','+llw.lat();
 			lSRS="4326";// use geographic projection when viewing details

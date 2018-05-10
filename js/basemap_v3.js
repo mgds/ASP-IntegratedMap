@@ -494,7 +494,7 @@ function EsriData(map,baseUrl,layer) {
 		var lSRS;
 		var urwlng = (urw.lng() == -180)? 180: urw.lng();
 		var llwlng = (llw.lng() == 180)? -180: llw.lng();
-		if (true)
+		if (true) {
 		//if (zoom < 5) {
 			bbox=dd2MercMetersLng(llwlng)+","+dd2MercMetersLat(urw.lat())+","+dd2MercMetersLng(urwlng)+","+dd2MercMetersLat(llw.lat());
 			lSRS="54004";// use mercator projection when viewimg large areas

@@ -457,9 +457,10 @@ function TileData(map,baseUrl,layer) {
 		var lSRS;
 		var urwlng = (urw.lng() == -180)? 180: urw.lng();
 		var llwlng = (llw.lng() == 180)? -180: llw.lng();
-		if (zoom < 5) {
+		if (true) {
+		//if (zoom < 5) {
 			bbox=dd2MercMetersLng(llwlng)+","+dd2MercMetersLat(urw.lat())+","+dd2MercMetersLng(urwlng)+","+dd2MercMetersLat(llw.lat());
-			lSRS="EPSG:3395";// use mercator projection when viewimg large areas
+			lSRS="EPSG:3857";// use mercator projection when viewimg large areas
 		} else {
 			bbox = llwlng + ','+urw.lat()+','+urwlng+','+llw.lat();
 			lSRS="EPSG:4326";// use geographic projection when viewing details
@@ -493,7 +494,8 @@ function EsriData(map,baseUrl,layer) {
 		var lSRS;
 		var urwlng = (urw.lng() == -180)? 180: urw.lng();
 		var llwlng = (llw.lng() == 180)? -180: llw.lng();
-		if (zoom < 5) {
+		if (true)
+		//if (zoom < 5) {
 			bbox=dd2MercMetersLng(llwlng)+","+dd2MercMetersLat(urw.lat())+","+dd2MercMetersLng(urwlng)+","+dd2MercMetersLat(llw.lat());
 			lSRS="54004";// use mercator projection when viewimg large areas
 		} else {

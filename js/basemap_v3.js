@@ -13,6 +13,7 @@ function MGDSMapClient() {
 	this.mapdiv = "mapclient";
     this.layers = new Array();
     this.data_layers = {};
+    this.baseLayerList = [];
 	this.mtoverlays = new Array();
 	this.infowin = new google.maps.InfoWindow();
 	google.maps.event.addListener(this.infowin, 'closeclick', function(event) {
@@ -255,11 +256,14 @@ MGDSMapClient.prototype.selectPoint = function(latlon) {
 	var self = this;
 	self.marker.setMap(null);
 	self.infowin.close();
+    self.infowin.setContent('');
 	var mt = self.map.overlayMapTypes.getAt(0);
 	var layer = mt.name;
     //console.log(self.mtoverlays[layer]);
-	if (layer && (self.mtoverlays[layer]['clickevent']|| self.mtoverlays[layer]['callback'])) {
-		var str = '';
+    for (i=0;i<self.baseLayerList.length;i++) {
+        var layer = self.baseLayerList[i];
+        if (self.mtoverlays[layer]['clickevent']|| self.mtoverlays[layer]['callback']) {
+        var str = '';
 		var qurl = self.qurl;
 		var data = $.extend({},self.mtoverlays[layer]['clickevent']);
 		if (data['qurl']) {
@@ -290,12 +294,14 @@ MGDSMapClient.prototype.selectPoint = function(latlon) {
                     });
                 },
                 success: function(msg){
-                    
                     if (msg) {
-                        self.marker.setPosition(latlon);
-                        self.marker.setMap(self.map);
-                        self.infowin.setContent(msg);
-                        self.infowin.open(self.map,self.marker);
+                        var content = self.infowin.getContent()
+                        if (!content){
+                            self.marker.setPosition(latlon);
+                            self.marker.setMap(self.map);
+                            self.infowin.open(self.map,self.marker);
+                        }
+                        self.infowin.setContent(content+msg);
                     }
 
                 }
@@ -305,6 +311,10 @@ MGDSMapClient.prototype.selectPoint = function(latlon) {
                 });
             });
         }
+        }
+    }
+	if (layer && (self.mtoverlays[layer]['clickevent']|| self.mtoverlays[layer]['callback'])) {
+		
 	}
 }
 MGDSMapClient.prototype.KMLOverlay = function(url,title,hide,zoomto,options) {
@@ -682,28 +692,32 @@ controlOverlay.prototype.baseLayer = function(title,onoff,grp_name,lyr_pos) {
 	
 	$(document).on('click','.baselayer',function(){
 	    var idx = $(this).attr('title');
-	    if ($(this).hasClass('off')) {
-		$(this).removeClass('off');
-		self.mapClient.mtoverlays[idx]['overlay'] = new google.maps.ImageMapType(self.mapClient.mtoverlays[idx]['wmslayer']);
+        var i = self.mapClient.baseLayerList.indexOf(idx);
+	    if (i==-1) {
+            $(this).removeClass('off');
+            self.mapClient.mtoverlays[idx]['overlay'] = new google.maps.ImageMapType(('esrilayer' in self.mapClient.mtoverlays[idx])?self.mapClient.mtoverlays[idx]['esrilayer']:self.mapClient.mtoverlays[idx]['wmslayer']);
 	    } else {
-		var mt = self.mapClient.map.overlayMapTypes.getAt(0);
+            var mt = self.mapClient.map.overlayMapTypes.getAt(i);
 	    }
 	    self.legendLayer(self.mapClient.mtoverlays[idx]['legend_url']);
-	    if( mt != undefined && mt.name == idx ){
-		this.style.backgroundColor = '#FFFFFF';
-		$(this).addClass('off');
-		self.mapClient.map.overlayMapTypes.removeAt(0);
+	    if(i>-1){
+            this.style.backgroundColor = '#FFFFFF';
+            $(this).addClass('off');
+            self.mapClient.baseLayerList.splice(i,1);
+            self.mapClient.map.overlayMapTypes.removeAt(i);
 	    }else{
-		$(".baselayer").css('background-color','#FFFFFF');
-		self.mapClient.map.overlayMapTypes.clear();
-		$(this).css('background-color','#BBBBBB');
-		self.mapClient.map.overlayMapTypes.insertAt(0,self.mapClient.mtoverlays[idx]['overlay']);
+            //$(".baselayer").css('background-color','#FFFFFF');
+            //self.mapClient.map.overlayMapTypes.clear();
+            $(this).css('background-color','#BBBBBB');
+            self.mapClient.baseLayerList.push(idx);
+            self.mapClient.map.overlayMapTypes.insertAt(self.mapClient.baseLayerList.length-1,self.mapClient.mtoverlays[idx]['overlay']);
 	    }
 	});
 	this.bases=true
     }
     if (onoff) {
 	self.mapClient.map.overlayMapTypes.clear();
+    self.mapClient.baseLayerList.push(title);
 	self.mapClient.map.overlayMapTypes.insertAt(0,self.mapClient.mtoverlays[title]['overlay']);
 	self.legendLayer(self.mapClient.mtoverlays[title]['legend_url']);
     }

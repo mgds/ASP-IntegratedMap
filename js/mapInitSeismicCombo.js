@@ -57,7 +57,7 @@ $(document).ready(function(){
             if (msgs.some(function(msg) { return msg; })) {
                 mgdsMap.marker.setPosition(latlon);
                 mgdsMap.marker.setMap(mgdsMap.map);
-                mgdsMap.infowin.setContent("");
+                //mgdsMap.infowin.setContent("");
                 $.each(msgs,function(i,v){
                     console.log(v);
                     var data = $.parseHTML(v);
@@ -85,6 +85,28 @@ $(document).ready(function(){
                         mgdsMap.infowin.open(mgdsMap.map,mgdsMap.marker);
                     } else if (data && $(data).hasClass("utig_json_content")) {
                         $.get('http://www.marine-geo.org/services/templates/utig_template.tmpl.html').done(function(tdata){
+                            var template = $.templates(tdata);
+                            var options = {
+                                checkValue: function(arr,element,value){
+                                    for (var i=0;i<arr.length;i++) {
+                                        if (arr[i][element]==value) {
+                                            return true;
+                                        }
+                                    }
+                                    return false;
+                                }
+                            };
+                            var obj = $(data).html();
+                            if (obj) {
+                                var existingContent = $(mgdsMap.infowin.getContent()).find(".ucontent").html();
+                                if (typeof existingContent === "undefined")
+                                    existingContent = '';
+                                mgdsMap.infowin.setContent("<div class=\"ucontent\">"+existingContent+template.render(JSON.parse(obj),options)+"</div>");
+                            }   
+                        });
+                        mgdsMap.infowin.open(mgdsMap.map,mgdsMap.marker);
+                    } else if (data && $(data).hasClass("iodp_json_content")) {
+                        $.get('http://www.marine-geo.org/services/templates/iodp_template.tmpl.html').done(function(tdata){
                             var template = $.templates(tdata);
                             var options = {
                                 checkValue: function(arr,element,value){
@@ -144,39 +166,41 @@ $(document).ready(function(){
             "layers" : 'MGDS-DataSets,UTIG-DataSet',
             "query_layers" : ['MGDS-DataObjects','UTIG-DataObjects']
         },
+        {
+            "title" : "IODP Drill Holes",
+            "layers" : 'DrillHoles',
+            "query_layers" : ['DrillHoles']
+        }
     ];
     
     layers.forEach(function(layer,idx){
+        var opts = {
+            SERVICE     : "WMS",
+            REQUEST     : "GetFeatureInfo",
+            SRS         : "EPSG:4326",
+            WIDTH       : 4,
+            HEIGHT      : 4,
+            X           : 2,
+            Y           : 2,
+            VERSION     : "1.0.0",
+            INFO_FORMAT : "text/html",
+            qurl        : "http://www.marine-geo.org/services/mapserv7/mgds_data?"
+        };
+        var urlopts = {};
+        if (typeof layer['sld_url']!=='undefined'){
+            opts['SLD'] = urlopts['SLD'] = layer['sld_url'];
+        }
         mgdsMap.overlayWMS(
-            mapserver_base+$.param({"SLD":layer['sld_url']})+"&",
+            mapserver_base+$.param(urlopts)+"&",
             layer['layers'],
             layer['title'],
             'image/png',
-            {
-                SERVICE     : "WMS",
-                REQUEST     : "GetFeatureInfo",
-                SRS         : "EPSG:4326",
-                WIDTH       : 4,
-                HEIGHT      : 4,
-                X           : 2,
-                Y           : 2,
-                VERSION     : "1.0.0",
-                INFO_FORMAT : "text/html",
-                SLD         : layer['sld_url'],
-                qurl        : "http://www.marine-geo.org/services/mapserv7/mgds_data?"
-            },
+            opts,
             null,
             null,
             clickCallback( layer['query_layers'] )
         );
     });
-
-	mgdsMap.overlayESRI(
-        "http://gis.ngdc.noaa.gov/arcgis/rest/services/Sample_Index/MapServer/export?layerDefs=0:FACILITY_CODE%3D%27IODP%27+OR+FACILITY_CODE%3D%27ODP%27+OR+FACILITY_CODE%3D%27DSDP%27",
-        "0",
-        "IODP Drill Holes",
-        "png"
-    );
 
     mgdsMap.overlayControl();
 });

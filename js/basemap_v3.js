@@ -86,7 +86,7 @@ MGDSMapClient.prototype.mapInit = function(hide,options,off) {
         this.movementTimer = setTimeout(function(){
             $.ajax({
                 type: "GET",
-                url: "http://www.marine-geo.org/services/pointserver.php",
+                url: "https://www.gmrt.org/services/PointServer/",
                 data: {
                     'latitude':latlng.lat().toFixed(6),
                     'longitude':latlng.lng().toFixed(6),
@@ -112,9 +112,9 @@ MGDSMapClient.prototype.baseMap = function() {
 	copyrightDiv.style.fontFamily = "Arial, sans-serif";
 	copyrightDiv.style.margin = "0 2px 2px 0";
 	copyrightDiv.style.whiteSpace = "nowrap";
-	copyrightDiv.innerHTML = "Bathymetry &copy;"+d.getFullYear()+" <a href='http://gmrt.marine-geo.org'>GMRT</a>";
+	copyrightDiv.innerHTML = "Bathymetry &copy;"+d.getFullYear()+" <a href='https://www.gmrt.org'>GMRT</a>";
 	this.map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(copyrightDiv);
-	var tile = new TileData(this.map,'http://www.marine-geo.org/services/wms_2.0_merc?','topo');
+	var tile = new TileData(this.map,'https://www.gmrt.org/services/mapserver/wms_merc?','topo');
 	var gmrt_layer = {
 		alt: " GMRT Basemap",
 		getTileUrl: tile.GetTileUrl,
@@ -124,7 +124,7 @@ MGDSMapClient.prototype.baseMap = function() {
 		name: "Bathymetry",
 		tileSize: new google.maps.Size(256, 256)
 	};
-    var tilemask = new TileData(this.map,'http://gmrt.marine-geo.org/cgi-bin/mapserv?map=/public/mgg/web/gmrt.marine-geo.org/htdocs/services/map/wms_merc_mask.map&','topo-mask');
+    var tilemask = new TileData(this.map,'https://www.gmrt.org/services/mapserver/wms_merc_mask?','topo');
 	var mask_layer = {
 		alt: " GMRT Basemap",
 		getTileUrl: tilemask.GetTileUrl,

@@ -202,5 +202,24 @@ $(document).ready(function(){
         );
     });
 
+	mgdsMap.overlayWMS(
+    "https://walrus.wr.usgs.gov/namss/wms?",
+    "namss",
+    "NAMSS Data",
+    'image/png',
+    {
+      SERVICE     : "WMS",
+      REQUEST     : "GetFeatureInfo",
+      SRS         : "EPSG:4326",
+      WIDTH       : 4,
+      HEIGHT      : 4,
+      X           : 2,
+      Y           : 2,
+      VERSION     : "1.0.0",
+      INFO_FORMAT : "text/html",
+      qurl        : "https://walrus.wr.usgs.gov/namss/wms?"
+    }
+  );
+
     mgdsMap.overlayControl();
 });
